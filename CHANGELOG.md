@@ -1,3 +1,3 @@
-## 0.0.2
+## 0.0.3
 
 minor changes and macOS enabled

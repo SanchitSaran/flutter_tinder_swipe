@@ -2,6 +2,7 @@ library flutter_tinder_swipe;
 
 import 'package:flutter/material.dart';
 import 'dart:math';
+
 ///making enum for button click funcion just like triggering event
 enum SwipeDirection { none, right, left }
 
@@ -222,7 +223,8 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
     super.initState();
     getInitialize();
   }
-///here we initialize some and giving value to some
+
+  ///here we initialize some and giving value to some
   void getInitialize() {
     _currentFront = widget._totalNum - widget._stackNum;
 
@@ -254,7 +256,8 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
 
     return Stack(children: _buildCards(context));
   }
-///change ordering of card
+
+  ///change ordering of card
   changeCardOrder() {
     setState(() {
       _currentFront--;
