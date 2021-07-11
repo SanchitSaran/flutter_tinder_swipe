@@ -6,6 +6,13 @@ A new Flutter plugin.
 
 See example
 
+Flutter Tinder Swipe
+The easiest way to implement a tinder-like swipe card mechanism in Flutter.
+
+The package contains a SwipeCard widget allowing to make content swipable.
+
+
+
 This project is a starting point for a Flutter
 [plug-in package](https://flutter.dev/developing-packages/),
 a specialized package that includes platform-specific implementation code for
