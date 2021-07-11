@@ -1,6 +1,6 @@
 name: flutter_tinder_swipe
 description: A new Flutter plugin just like tinder swipe card . can do swipe left and right also have swipeable option by clicking left right button
-version: 0.0.1
+version: 0.0.2
 homepage: https://github.com/SanchitSaran/flutter_tinder_swipe.git
 
 environment:
