@@ -2,7 +2,7 @@ library flutter_tinder_swipe;
 
 import 'package:flutter/material.dart';
 import 'dart:math';
-
+///making enum for button click funcion just like triggering event
 enum SwipeDirection { none, right, left }
 
 List<Size> swipeSize = [];
@@ -22,6 +22,12 @@ class SwipeCard extends StatefulWidget {
 
   @override
   _SwipeCardState createState() => _SwipeCardState();
+
+  /// Constructor requires Card Widget Builder [cardBuilder] & your card count [totalNum]
+  /// , option includes: stack orientation [orientation], number of card display in same time [stackNum]
+  /// , [swipeEdge] is the edge to determine action(recover or swipe) when you release your swiping card
+  /// it is the value of alignment, 0.0 means middle, so it need bigger than zero.
+  /// , and size control params;
 
   SwipeCard(
       {required CardBuilder cardBuilder,
@@ -75,7 +81,11 @@ class SwipeCard extends StatefulWidget {
 
 class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
   late Alignment frontAlign;
+
+  ///alignment
   late AnimationController _animationController;
+
+  ///animation controller
   late int _currentFront;
   static SwipeDirection? swipeable;
 
@@ -110,6 +120,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
       );
     }
 
+    ///align
     return Align(
       alignment: _animationController.status == AnimationStatus.forward &&
               (frontAlign.x > 3.0 ||
@@ -135,6 +146,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
     );
   }
 
+  ///builder swipe card
   List<Widget> _buildCards(BuildContext context) {
     List<Widget> cards = [];
     for (int i = _currentFront; i < _currentFront + widget._stackNum; i++) {
@@ -173,6 +185,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
     return cards;
   }
 
+  ///animation for swipe cards and here we initializing our swipeable
   animateCards(SwipeDirection swipes) {
     if (_animationController.isAnimating ||
         _currentFront + widget._stackNum == 0) {
@@ -188,15 +201,16 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
     animateCards(swipes);
   }
 
-  // support for asynchronous data events
+  /// support for asynchronous data events
   @override
   void didUpdateWidget(covariant SwipeCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget._totalNum != oldWidget._totalNum) {
-      _initState();
+      getInitialize();
     }
   }
 
+  ///disposing controller
   @override
   void dispose() {
     _animationController.dispose();
@@ -206,10 +220,10 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
-    _initState();
+    getInitialize();
   }
-
-  void _initState() {
+///here we initialize some and giving value to some
+  void getInitialize() {
     _currentFront = widget._totalNum - widget._stackNum;
 
     frontAlign = swipeAligns[swipeAligns.length - 1];
@@ -240,7 +254,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
 
     return Stack(children: _buildCards(context));
   }
-
+///change ordering of card
   changeCardOrder() {
     setState(() {
       _currentFront--;
@@ -251,7 +265,8 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
 
 typedef Widget CardBuilder(BuildContext context, int index);
 
-enum CardSwipeOrientation { LEFT, RIGHT, RECOVER, UP, DOWN }
+///card swipe enum declare for orientaion left and right
+enum CardSwipeOrientation { LEFT, RIGHT, RECOVER }
 
 /// swipe card to [CardSwipeOrientation.LEFT] or [CardSwipeOrientation.RIGHT]
 /// , [CardSwipeOrientation.RECOVER] means back to start.
@@ -262,6 +277,7 @@ typedef CardSwipeCompleteCallback = void Function(
 typedef CardDragUpdateCallback = void Function(
     DragUpdateDetails details, Alignment align);
 
+///declaring enum for action performing
 enum AmassOrientation { LEFT, RIGHT }
 
 class CardAnimation {
@@ -273,6 +289,7 @@ class CardAnimation {
   ) {
     double endX, endY;
 
+    ///condition for swipe none ,left,right
     if (_SwipeCardState.swipeable == SwipeDirection.none) {
       endX = beginAlign.x > 0
           ? (beginAlign.x > swipeEdge ? beginAlign.x + 10.0 : baseAlign.x)
@@ -287,25 +304,28 @@ class CardAnimation {
       endX = beginAlign.x + swipeEdge;
       endY = beginAlign.y + 0.5;
     }
+
+    ///applying tween animation
     return new AlignmentTween(begin: beginAlign, end: new Alignment(endX, endY))
         .animate(
             new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
+  ///card animation front
   static Animation<double> frontRotation(
       AnimationController controller, double beginRot) {
     return new Tween(begin: beginRot, end: 0.0).animate(
         new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
-  ///Card Size
+  ///Card animation Size
   static Animation backSize(
       AnimationController controller, Size beginSize, Size endSize) {
     return new SizeTween(begin: beginSize, end: endSize).animate(
         new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
-  ///Card Align
+  ///Card aniamtion Align
   static Animation<Alignment> backAlign(AnimationController controller,
       Alignment beginAlign, Alignment endAlign) {
     return new AlignmentTween(begin: beginAlign, end: endAlign).animate(
@@ -313,23 +333,28 @@ class CardAnimation {
   }
 }
 
+///swipe listen
 typedef SwipeListen = void Function(SwipeDirection swipes);
 
+///making class called as Card Controller
 class CardController {
   SwipeListen? _listener;
 
+  ///for action performed by clicking tap for left swipe
   void swipeLeft() {
     if (_listener != null) {
       _listener!(SwipeDirection.left);
     }
   }
 
+  ///for action performed by clicking tap for right swipe
   void swipeRight() {
     if (_listener != null) {
       _listener!(SwipeDirection.right);
     }
   }
 
+  ///adding listener to listen
   void addListener(listener) {
     _listener = listener;
   }
