@@ -1,3 +1,3 @@
-## 0.0.3
+## 0.0.4
 
-minor changes and macOS enabled
+minor changes and web enabled

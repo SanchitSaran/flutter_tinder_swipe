@@ -1,5 +1,15 @@
 # flutter_tinder_swipe_example
 
+[![FlutterTinderSwipe](https://img.shields.io/badge/flutter_tinder_swipe-fast-red)](https://github.com/SanchitSaran/flutter_tinder_swipe.git)
+[![Pub release](https://img.shields.io/pub/v/velocity_x.svg?style=flat-square)](https://pub.dev/packages/flutter_tinder_swipe)
+[![GitHub Release Date](https://img.shields.io/github/release-date/iampawan/velocityx.svg?style=flat-square)](https://github.com/SanchitSaran/flutter_tinder_swipe.git)
+[![GitHub issues](https://img.shields.io/github/issues/sanchitsaran/flutter_tinder_swipe.svg?style=flat-square)](https://github.com/SanchitSaran/flutter_tinder_swipe.git)
+[![pub package](https://img.shields.io/pub/v/flutter_tinder_swipe.svg)](https://github.com/SanchitSaran/flutter_tinder_swipe.git)
+[![Likes](https://badges.bar/flutter_tinder_swipe/likes)](https://pub.dev/packages/flutter_tinder_swipe/score)
+[![Popularity](https://badges.bar/flutter_tinder_swipe/popularity)](https://pub.dev/packages/flutter_tinder_swipe/score)
+
+
+
 Demonstrates how to use the flutter_tinder_swipe plugin.
 
 ## Getting Started
