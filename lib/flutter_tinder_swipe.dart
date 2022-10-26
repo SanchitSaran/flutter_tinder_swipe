@@ -20,6 +20,8 @@ class SwipeCard extends StatefulWidget {
   CardSwipeCompleteCallback swipeCompleteCallback;
   CardDragUpdateCallback swipeUpdateCallback;
   CardController cardController;
+  Function swipeLeft;
+  Function swipeRight;
 
   @override
   _SwipeCardState createState() => _SwipeCardState();
@@ -30,22 +32,7 @@ class SwipeCard extends StatefulWidget {
   /// it is the value of alignment, 0.0 means middle, so it need bigger than zero.
   /// , and size control params;
 
-  SwipeCard(
-      {required CardBuilder cardBuilder,
-      required int totalNum,
-      AmassOrientation orientation = AmassOrientation.LEFT,
-      int stackNum = 3,
-      int animDuration = 800,
-      double swipeEdge = 3.0,
-      double swipeEdgeVertical = 8.0,
-      double? maxWidth,
-      double? maxHeight,
-      double? minWidth,
-      double? minHeight,
-      bool allowVerticalMovement = true,
-      required this.cardController,
-      required this.swipeCompleteCallback,
-      required this.swipeUpdateCallback})
+  SwipeCard({required CardBuilder cardBuilder, required int totalNum, AmassOrientation orientation = AmassOrientation.LEFT, int stackNum = 3, int animDuration = 800, double swipeEdge = 3.0, double swipeEdgeVertical = 8.0, double? maxWidth, double? maxHeight, double? minWidth, double? minHeight, bool allowVerticalMovement = true, required this.cardController, required this.swipeCompleteCallback, required this.swipeUpdateCallback, required this.swipeLeft, required this.swipeRight})
       : this._cardBuilder = cardBuilder,
         this._totalNum = totalNum,
         assert(stackNum > 1),
@@ -63,17 +50,14 @@ class SwipeCard extends StatefulWidget {
     swipeSize = [];
 
     for (int i = 0; i < _stackNum; i++) {
-      swipeSize.add(new Size(minWidth + (widthGap / _stackNum) * i,
-          minHeight + (heightGap / _stackNum) * i));
+      swipeSize.add(new Size(minWidth + (widthGap / _stackNum) * i, minHeight + (heightGap / _stackNum) * i));
 
       switch (orientation) {
         case AmassOrientation.LEFT:
-          swipeAligns.add(
-              new Alignment((-0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
+          swipeAligns.add(new Alignment((-0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
           break;
         case AmassOrientation.RIGHT:
-          swipeAligns.add(
-              new Alignment((0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
+          swipeAligns.add(new Alignment((0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
           break;
       }
     }
@@ -107,41 +91,19 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
               ).value
             : frontAlign,
         child: Transform.rotate(
-            angle: (pi / 180.0) *
-                (_animationController.status == AnimationStatus.forward
-                    ? CardAnimation.frontRotation(
-                            _animationController, frontAlign.x)
-                        .value
-                    : frontAlign.x),
+            angle: (pi / 180.0) * (_animationController.status == AnimationStatus.forward ? CardAnimation.frontRotation(_animationController, frontAlign.x).value : frontAlign.x),
             child: new SizedBox.fromSize(
               size: swipeSize[index],
-              child: widget._cardBuilder(
-                  context, widget._totalNum - realIndex - 1),
+              child: widget._cardBuilder(context, widget._totalNum - realIndex - 1),
             )),
       );
     }
 
     ///align
     return Align(
-      alignment: _animationController.status == AnimationStatus.forward &&
-              (frontAlign.x > 3.0 ||
-                  frontAlign.x < -3.0 ||
-                  frontAlign.y > 3 ||
-                  frontAlign.y < -3)
-          ? CardAnimation.backAlign(_animationController, swipeAligns[index],
-                  swipeAligns[index + 1])
-              .value
-          : swipeAligns[index],
+      alignment: _animationController.status == AnimationStatus.forward && (frontAlign.x > 3.0 || frontAlign.x < -3.0 || frontAlign.y > 3 || frontAlign.y < -3) ? CardAnimation.backAlign(_animationController, swipeAligns[index], swipeAligns[index + 1]).value : swipeAligns[index],
       child: new SizedBox.fromSize(
-        size: _animationController.status == AnimationStatus.forward &&
-                (frontAlign.x > 3.0 ||
-                    frontAlign.x < -3.0 ||
-                    frontAlign.y > 3 ||
-                    frontAlign.y < -3)
-            ? CardAnimation.backSize(_animationController, swipeSize[index],
-                    swipeSize[index + 1])
-                .value
-            : swipeSize[index],
+        size: _animationController.status == AnimationStatus.forward && (frontAlign.x > 3.0 || frontAlign.x < -3.0 || frontAlign.y > 3 || frontAlign.y < -3) ? CardAnimation.backSize(_animationController, swipeSize[index], swipeSize[index + 1]).value : swipeSize[index],
         child: widget._cardBuilder(context, widget._totalNum - realIndex - 1),
       ),
     );
@@ -159,18 +121,9 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
         onPanUpdate: (DragUpdateDetails details) {
           setState(() {
             if (widget._allowVerticalMovement == true) {
-              frontAlign = new Alignment(
-                  frontAlign.x +
-                      details.delta.dx * 20 / MediaQuery.of(context).size.width,
-                  frontAlign.y +
-                      details.delta.dy *
-                          30 /
-                          MediaQuery.of(context).size.height);
+              frontAlign = new Alignment(frontAlign.x + details.delta.dx * 20 / MediaQuery.of(context).size.width, frontAlign.y + details.delta.dy * 30 / MediaQuery.of(context).size.height);
             } else {
-              frontAlign = new Alignment(
-                  frontAlign.x +
-                      details.delta.dx * 20 / MediaQuery.of(context).size.width,
-                  0);
+              frontAlign = new Alignment(frontAlign.x + details.delta.dx * 20 / MediaQuery.of(context).size.width, 0);
 
               widget.swipeUpdateCallback(details, frontAlign);
             }
@@ -188,8 +141,7 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
 
   ///animation for swipe cards and here we initializing our swipeable
   animateCards(SwipeDirection swipes) {
-    if (_animationController.isAnimating ||
-        _currentFront + widget._stackNum == 0) {
+    if (_animationController.isAnimating || _currentFront + widget._stackNum == 0) {
       return;
     }
     swipeable = swipes;
@@ -229,18 +181,19 @@ class _SwipeCardState extends State<SwipeCard> with TickerProviderStateMixin {
     _currentFront = widget._totalNum - widget._stackNum;
 
     frontAlign = swipeAligns[swipeAligns.length - 1];
-    _animationController = new AnimationController(
-        vsync: this, duration: Duration(milliseconds: widget._animDuration));
+    _animationController = new AnimationController(vsync: this, duration: Duration(milliseconds: widget._animDuration));
     _animationController.addListener(() => setState(() {}));
     _animationController.addStatusListener((AnimationStatus status) {
       int index = widget._totalNum - widget._stackNum - _currentFront;
       if (status == AnimationStatus.completed) {
         CardSwipeOrientation orientation;
-        if (frontAlign.x < -widget._swipeEdge)
+        if (frontAlign.x < -widget._swipeEdge) {
           orientation = CardSwipeOrientation.LEFT;
-        else if (frontAlign.x > widget._swipeEdge)
+          widget.swipeLeft();
+        } else if (frontAlign.x > widget._swipeEdge) {
           orientation = CardSwipeOrientation.RIGHT;
-        else {
+          widget.swipeRight();
+        } else {
           frontAlign = swipeAligns[widget._stackNum - 1];
           orientation = CardSwipeOrientation.RECOVER;
         }
@@ -273,12 +226,10 @@ enum CardSwipeOrientation { LEFT, RIGHT, RECOVER }
 
 /// swipe card to [CardSwipeOrientation.LEFT] or [CardSwipeOrientation.RIGHT]
 /// , [CardSwipeOrientation.RECOVER] means back to start.
-typedef CardSwipeCompleteCallback = void Function(
-    CardSwipeOrientation orientation, int index);
+typedef CardSwipeCompleteCallback = void Function(CardSwipeOrientation orientation, int index);
 
 /// [DragUpdateDetails] of swiping card.
-typedef CardDragUpdateCallback = void Function(
-    DragUpdateDetails details, Alignment align);
+typedef CardDragUpdateCallback = void Function(DragUpdateDetails details, Alignment align);
 
 ///declaring enum for action performing
 enum AmassOrientation { LEFT, RIGHT }
@@ -294,12 +245,8 @@ class CardAnimation {
 
     ///condition for swipe none ,left,right
     if (_SwipeCardState.swipeable == SwipeDirection.none) {
-      endX = beginAlign.x > 0
-          ? (beginAlign.x > swipeEdge ? beginAlign.x + 10.0 : baseAlign.x)
-          : (beginAlign.x < -swipeEdge ? beginAlign.x - 10.0 : baseAlign.x);
-      endY = beginAlign.x > 3.0 || beginAlign.x < -swipeEdge
-          ? beginAlign.y
-          : baseAlign.y;
+      endX = beginAlign.x > 0 ? (beginAlign.x > swipeEdge ? beginAlign.x + 10.0 : baseAlign.x) : (beginAlign.x < -swipeEdge ? beginAlign.x - 10.0 : baseAlign.x);
+      endY = beginAlign.x > 3.0 || beginAlign.x < -swipeEdge ? beginAlign.y : baseAlign.y;
     } else if (_SwipeCardState.swipeable == SwipeDirection.left) {
       endX = beginAlign.x - swipeEdge;
       endY = beginAlign.y + 0.5;
@@ -309,30 +256,22 @@ class CardAnimation {
     }
 
     ///applying tween animation
-    return new AlignmentTween(begin: beginAlign, end: new Alignment(endX, endY))
-        .animate(
-            new CurvedAnimation(parent: controller, curve: Curves.easeOut));
+    return new AlignmentTween(begin: beginAlign, end: new Alignment(endX, endY)).animate(new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
   ///card animation front
-  static Animation<double> frontRotation(
-      AnimationController controller, double beginRot) {
-    return new Tween(begin: beginRot, end: 0.0).animate(
-        new CurvedAnimation(parent: controller, curve: Curves.easeOut));
+  static Animation<double> frontRotation(AnimationController controller, double beginRot) {
+    return new Tween(begin: beginRot, end: 0.0).animate(new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
   ///Card animation Size
-  static Animation backSize(
-      AnimationController controller, Size beginSize, Size endSize) {
-    return new SizeTween(begin: beginSize, end: endSize).animate(
-        new CurvedAnimation(parent: controller, curve: Curves.easeOut));
+  static Animation backSize(AnimationController controller, Size beginSize, Size endSize) {
+    return new SizeTween(begin: beginSize, end: endSize).animate(new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 
   ///Card aniamtion Align
-  static Animation<Alignment> backAlign(AnimationController controller,
-      Alignment beginAlign, Alignment endAlign) {
-    return new AlignmentTween(begin: beginAlign, end: endAlign).animate(
-        new CurvedAnimation(parent: controller, curve: Curves.easeOut));
+  static Animation<Alignment> backAlign(AnimationController controller, Alignment beginAlign, Alignment endAlign) {
+    return new AlignmentTween(begin: beginAlign, end: endAlign).animate(new CurvedAnimation(parent: controller, curve: Curves.easeOut));
   }
 }
 
