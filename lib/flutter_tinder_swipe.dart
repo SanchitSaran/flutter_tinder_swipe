@@ -54,10 +54,18 @@ class SwipeCard extends StatefulWidget {
 
       switch (orientation) {
         case AmassOrientation.LEFT:
-          swipeAligns.add(new Alignment((-0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
+          if (_stackNum == 1) {
+            swipeAligns.add(new Alignment(-0.5 * (stackNum - i), 0.0));
+          } else {
+            swipeAligns.add(new Alignment((-0.5 / _stackNum - 1) * (stackNum - i), 0.0));
+          }
           break;
         case AmassOrientation.RIGHT:
-          swipeAligns.add(new Alignment((0.5 / (_stackNum - 1)) * (stackNum - i), 0.0));
+          if (_stackNum == 1) {
+            swipeAligns.add(new Alignment(-0.5 * (stackNum - i), 0.0));
+          } else {
+            swipeAligns.add(new Alignment((0.5 / _stackNum - 1) * (stackNum - i), 0.0));
+          }
           break;
       }
     }
